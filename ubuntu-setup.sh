@@ -2,20 +2,26 @@
 set -e
 
 # -------------------------------
-# Ubuntu Minimalist Setup Script
+# Ubuntu Minimalist Developer Setup Script
 # -------------------------------
 # This script automates the installation of essential apps and tweaks
-# for a minimalist Ubuntu desktop environment.
+# for a minimalist Ubuntu desktop environment, enhanced for developers.
 # -------------------------------
 
-echo "👋 Starting Ubuntu setup..."
+# Check architecture
+if ! [ "$(uname -m)" = "x86_64" ]; then
+    echo "❌ This script is designed for x86_64 architecture only."
+    exit 1
+fi
+
+echo "👋 Starting Ubuntu developer setup..."
 sleep 2
 
 echo "🚀 Updating system..."
 sudo apt update && sudo apt upgrade -y
 
 echo "📦 Installing essentials..."
-sudo apt install -y curl wget git build-essential software-properties-common apt-transport-https
+sudo apt install -y curl wget git build-essential software-properties-common apt-transport-https ca-certificates gnupg lsb-release
 
 # -------------------------------
 # 1. Visual Studio Code
@@ -55,12 +61,12 @@ sudo apt install -y ./obsidian_amd64.deb
 rm obsidian_amd64.deb
 
 # -------------------------------
-# 5. OnlyOffice
+# 5. SoftMaker FreeOffice
 # -------------------------------
-echo "📄 Installing OnlyOffice..."
-wget https://download.onlyoffice.com/install/desktop/editors/linux/onlyoffice-desktopeditors_amd64.deb
-sudo apt install -y ./onlyoffice-desktopeditors_amd64.deb
-rm onlyoffice-desktopeditors_amd64.deb
+echo "📄 Installing SoftMaker FreeOffice..."
+wget https://www.softmaker.net/down/softmaker-freeoffice-2024_1228-01_amd64.deb -O softmaker-freeoffice.deb
+sudo apt install -y ./softmaker-freeoffice.deb
+rm softmaker-freeoffice.deb
 
 # -------------------------------
 # 6. Warp (Terminal)
@@ -93,14 +99,30 @@ sudo apt install -y neovim
 # 10. Jupyter Notebook
 # -------------------------------
 echo "📓 Installing Jupyter Notebook..."
-sudo apt install -y python3-pip python3-dev
+sudo apt install -y python3-pip python3-dev python3-venv
 pip3 install --upgrade pip
-pip3 install jupyter
+pip3 install jupyter virtualenv
+
+# -------------------------------
+# 11. Docker
+# -------------------------------
+echo "🐳 Installing Docker..."
+sudo apt install -y docker.io docker-compose
+sudo usermod -aG docker $USER
+echo "ℹ️ Log out and back in to use Docker without sudo."
+
+# -------------------------------
+# 12. Node.js (LTS)
+# -------------------------------
+echo "🔧 Installing Node.js LTS..."
+curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+sudo apt install -y nodejs
 
 echo "✅ All apps installed successfully!"
 echo "🔄 Please reboot or log out/in for everything to take effect."
+
 # -------------------------------
-# 11. GNOME Tweaks + Extensions
+# 13. GNOME Tweaks + Extensions
 # -------------------------------
 echo "⚙️ Installing GNOME Tweaks & Extensions..."
 sudo apt install -y gnome-tweaks gnome-shell-extensions
@@ -123,6 +145,7 @@ gnome-extensions enable dash-to-panel@jderose9.github.com || echo "⚠️ Please
 # -------------------------------
 echo "🎛️ Disabling GNOME animations..."
 gsettings set org.gnome.desktop.interface enable-animations false
+
 # -------------------------------
 # Dark Mode
 # -------------------------------
@@ -142,7 +165,5 @@ gsettings set org.gnome.desktop.interface document-font-name 'Roboto 11'
 gsettings set org.gnome.desktop.interface monospace-font-name 'JetBrains Mono 12'
 gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Roboto Bold 11'
 
-
-echo "🎉 Setup complete! Enjoy your minimalist Ubuntu setup!"
+echo "🎉 Setup complete! Enjoy your minimalist Ubuntu developer setup!"
 reboot
-
